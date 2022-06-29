@@ -35,7 +35,7 @@
 							<muleVersion>4.4.0</muleVersion>
 							<username>PreddysTrail574</username>
 							<password>PreddysTrail574</password>
-							<applicationName>survey-insert-papi</applicationName>
+							<applicationName>survey-mongo-insert-pradeep-api</applicationName>
 							<environment>Design</environment>
 							<workerType>MICRO</workerType>
 							<objectStoreV2>true</objectStoreV2>
