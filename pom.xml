@@ -36,7 +36,7 @@
 							<username>PreddysTrail574</username>
 							<password>PreddysTrail574</password>
 							<applicationName>survey-mongo-insert-pradeep-api</applicationName>
-							<environment>Design</environment>
+							<environment>Sandbox</environment>
 							<workerType>MICRO</workerType>
 							<objectStoreV2>true</objectStoreV2>
 						</cloudHubDeployment>
