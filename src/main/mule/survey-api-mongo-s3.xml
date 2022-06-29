@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<mongo:config name="MongoDB_Config" doc:name="MongoDB Config" doc:id="e6f9b0cd-d169-4303-a722-81673572d33d" >
+		<mongo:connection-string-connection connectionString="mongodb://localhost:27017/Survey" />
+	</mongo:config>
+	<flow name="survey-api-mongo-s3Flow" doc:id="d8495464-54da-4545-9666-2f295ac628b8" >
+		<mongo:object-listener doc:name="On Object Listener" doc:id="538d9b08-d58d-47a9-8342-f1229871aeff" config-ref="MongoDB_Config" collectionName="SurveyResponses" watermarkField="index">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</mongo:object-listener>
+		<ee:transform doc:name="Transform Message" doc:id="7559e6d1-4a38-4f02-8919-656ac7fee04e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="condition" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"survey.id": payload.survey_id
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<mongo:find-documents doc:name="Find documents" doc:id="c9796025-07e0-4489-8a6c-da5d4c2f88f5" config-ref="MongoDB_Config" collectionName="SurveyTemplate" fields="survey" target="payload2">
+			<mongo:query ><![CDATA[#[vars.condition]]]></mongo:query>
+		</mongo:find-documents>
+		<ee:transform doc:name="Transform Message" doc:id="be1025dc-1f0a-406a-815b-d5496e7defce" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+skipNullOn = "everywhere"
+var req = {
+   "ids": payload.surveyDate.questionId,
+   "responses": payload.surveyDate.response
+}
+---
+'values': vars.payload2.survey.questions[0] mapObject ((value, key, index) ->{
+    (key): (req.ids map ((item1, index1) -> 
+        if(item1 == value.questionName)
+            req.responses[index1]
+        else null             
+    ))[index]
+}) ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="48d9882d-28fc-4b32-88f0-467d419799cd" message="#[payload]"/>
+	</flow>
+</mule>

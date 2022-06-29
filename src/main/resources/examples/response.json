@@ -1,0 +1,23 @@
+{
+  "survey_id" : "survey_1",
+  "agentName": "Pradeep",
+  "agentId": "emp01",
+  "surveyDate": [
+    {
+      "questionId": "RecommendQuestion",
+      "response": 10
+    },
+    {
+      "questionId": "RepresentativeQuestion",
+      "response": 9
+    },
+    {
+      "questionId": "ResolveIssueInput",
+      "response": 1
+    },
+    {
+      "questionId": "OverallEase",
+      "response": 10
+    }
+  ]
+}

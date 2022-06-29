@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="response" format="json">
+      <types:shape format="weave" example="examples/response.json"><![CDATA[%dw 2.0
+
+type response = {|
+  survey_id: String, 
+  agentName: String, 
+  agentId: String, 
+  surveyDate: Array<{|    questionId: String,     response: Number {"typeId": "int"}  |}>
+|} {"example": "{\\\"survey_id\\\":\\\"survey_1\\\",\\\"agentName\\\":\\\"Pradeep\\\",\\\"agentId\\\":\\\"emp01\\\",\\\"surveyDate\\\":[{\\\"questionId\\\":\\\"RecommendQuestion\\\",\\\"response\\\":10},{\\\"questionId\\\":\\\"RepresentativeQuestion\\\",\\\"response\\\":9},{\\\"questionId\\\":\\\"ResolveIssueInput\\\",\\\"response\\\":1},{\\\"questionId\\\":\\\"OverallEase\\\",\\\"response\\\":10}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="final" format="json">
+      <types:shape format="weave" example="examples/final.json"><![CDATA[%dw 2.0
+
+type final = {|
+  values: {|
+    QID1: Number {"typeId": "int"}, 
+    QID2: Number {"typeId": "int"}, 
+    QID3: Number {"typeId": "int"}, 
+    QID4: Number {"typeId": "int"}
+  |}
+|} {"example": "{\\\"values\\\":{\\\"QID1\\\":10,\\\"QID2\\\":9,\\\"QID3\\\":1,\\\"QID4\\\":10}}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#7559e6d1-4a38-4f02-8919-656ac7fee04e"/>
+  <types:enrichment select="#be1025dc-1f0a-406a-815b-d5496e7defce">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="response"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="final"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
